@@ -1,0 +1,259 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#app {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  max-width: 900px;
+  width: 95%;
+  min-height: 500px;
+}
+
+.progress-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  color: white;
+  text-align: center;
+}
+
+.level-info {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.round-info {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.task-container {
+  text-align: center;
+}
+
+.task-question {
+  font-size: 52px;
+  margin: 30px 0 10px 0;
+  color: #2c3e50;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.items-display {
+  font-size: 80px;
+  margin: 40px 0;
+  line-height: 1.2;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.buttons-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 40px 0;
+}
+
+.answer-btn {
+  padding: 25px;
+  font-size: 32px;
+  border: 3px solid #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 700;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.answer-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: scale(1.05);
+}
+
+.answer-btn:active {
+  transform: scale(0.98);
+}
+
+.results-container {
+  text-align: center;
+}
+
+.results-container h1 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 36px;
+}
+
+.results-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 30px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.result-item {
+  font-size: 20px;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.exercises-section {
+  text-align: left;
+  margin: 30px 0;
+  padding: 20px;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 8px;
+}
+
+.exercises-section h3 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.exercise-list {
+  list-style: none;
+  padding: 0;
+}
+
+.exercise-item {
+  background: white;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border-left: 4px solid #e74c3c;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.exercise-item strong {
+  color: #2c3e50;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.btn-next, .btn-retry {
+  padding: 18px 35px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-next {
+  background: #2ecc71;
+  color: white;
+}
+
+.btn-next:hover {
+  background: #27ae60;
+}
+
+.btn-retry {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-retry:hover {
+  background: #c0392b;
+}
+
+/* iPad optimalisering */
+@media (min-width: 768px) and (max-width: 1024px) {
+  #app {
+    padding: 50px;
+    width: 90%;
+  }
+  
+  .task-question {
+    font-size: 56px;
+  }
+  
+  .items-display {
+    font-size: 90px;
+  }
+  
+  .answer-btn {
+    padding: 30px;
+    font-size: 36px;
+    min-height: 90px;
+  }
+}
+
+/* Mobile optimalisering */
+@media (max-width: 767px) {
+  #app {
+    padding: 20px;
+    min-height: 400px;
+  }
+  
+  .task-question {
+    font-size: 40px;
+    margin: 20px 0 5px 0;
+  }
+  
+  .items-display {
+    font-size: 60px;
+    margin: 30px 0;
+  }
+  
+  .answer-btn {
+    padding: 18px;
+    font-size: 24px;
+    min-height: 70px;
+  }
+  
+  .buttons-container {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 25px 0;
+  }
+  
+  .progress-header {
+    padding: 12px;
+    margin-bottom: 15px;
+  }
+  
+  .round-info {
+    font-size: 11px;
