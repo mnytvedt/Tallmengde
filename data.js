@@ -1,6 +1,5 @@
 
 // Strukturert database for Mengdetrening
-console.log('data.js loaded');
 const LEVELS = {
   level1: {
     name: '1. Mengdetelling 0–5',
@@ -47,8 +46,8 @@ const TASKS = {
     { items: '🍎', a: ['0','1','2','3'], correct: '1' },
     { items: '🌸 🌸 🌸 🌸', a: ['3','4','5','6'], correct: '4' },
     { items: '🚗 🚗 🚗 🚗 🚗', a: ['4','5','6','7'], correct: '5' },
-    { items: '🐑 🦒 🐑', a: ['1','2','3','4'], correct: '3' },
-    { items: '🐦 🐦 🦅', a: ['2','3','4','5'], correct: '3' },
+    { items: '🐑 🐑 🐑', a: ['1','2','3','4'], correct: '3' },
+    { items: '🐦 🐦 🐦', a: ['2','3','4','5'], correct: '3' },
     { items: '🦀 🦀 🦀 🦀', a: ['3','4','5','6'], correct: '4' },
     { items: '⭐ ⭐', a: ['1','2','3','4'], correct: '2' },
     { items: '🔵 🔵 🔵', a: ['2','3','4','5'], correct: '3' },

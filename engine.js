@@ -1,6 +1,5 @@
 
 // Game State Management
-console.log('engine.js loaded');
 let gameState = {
   currentLevel: 'level1',
   currentModule: 'A',
@@ -9,8 +8,10 @@ let gameState = {
   responses: [], // { taskIndex, answer, correct, timeMs, taskId }
   unlockedLevels: ['level1'],
   sessionStartTime: null,
+  questionStartTime: null,
   roundTasks: [], // Tasks for current round
-  previousTaskId: null // To avoid repeating same task
+  previousTaskId: null,
+  previousCorrectIndex: null
 };
 
 // Save/Load from localStorage
@@ -79,6 +80,8 @@ function initializeRound() {
   gameState.currentTaskIndex = 0;
   gameState.responses = [];
   gameState.sessionStartTime = Date.now();
+  gameState.questionStartTime = null;
+  gameState.previousCorrectIndex = null;
 }
 
 // Create control tasks (match numbers to numbers)
@@ -135,6 +138,7 @@ function render() {
     moduleInfo = ` - ${module.name}`;
   }
   
+  gameState.questionStartTime = Date.now();
   let html = `
     <div class="task-container">
       <div class="progress-header">
@@ -146,7 +150,15 @@ function render() {
       <div class="buttons-container">
   `;
   
-  task.a.forEach((answer, idx) => {
+  let answers = shuffleArray([...task.a]);
+  const correctIndex = answers.indexOf(task.correct);
+  if (gameState.previousCorrectIndex !== null && answers.length > 1 && correctIndex === gameState.previousCorrectIndex) {
+    const swapIndex = (correctIndex + 1) % answers.length;
+    [answers[correctIndex], answers[swapIndex]] = [answers[swapIndex], answers[correctIndex]];
+  }
+  gameState.previousCorrectIndex = answers.indexOf(task.correct);
+
+  answers.forEach((answer) => {
     html += `<button class="answer-btn" onclick="recordAnswer('${answer}')">${answer}</button>`;
   });
   
@@ -157,8 +169,8 @@ function render() {
 // Record answer and move to next task
 function recordAnswer(answer) {
   const task = gameState.roundTasks[gameState.currentTaskIndex];
-  const taskStartTime = Date.now();
   const isCorrect = answer === task.correct;
+  const timeMs = gameState.questionStartTime ? Date.now() - gameState.questionStartTime : 0;
   
   gameState.responses.push({
     taskIndex: gameState.currentTaskIndex,
@@ -166,7 +178,7 @@ function recordAnswer(answer) {
     correct: isCorrect,
     question: `Hvor mange? ${gameState.roundTasks[gameState.currentTaskIndex].items}`,
     correctAnswer: task.correct,
-    timeMs: gameState.sessionStartTime ? Date.now() - gameState.sessionStartTime : 0
+    timeMs: timeMs
   });
   
   gameState.currentTaskIndex++;
@@ -181,17 +193,26 @@ function recordAnswer(answer) {
 function calculateResults() {
   const correct = gameState.responses.filter(r => r.correct).length;
   const incorrect = gameState.responses.filter(r => !r.correct).length;
-  const avgTime = gameState.responses.length > 0 
-    ? gameState.responses.reduce((sum, r) => sum + r.timeMs, 0) / gameState.responses.length / 1000
+  const timesMs = gameState.responses.map(r => r.timeMs);
+  const avgTime = timesMs.length > 0
+    ? timesMs.reduce((sum, t) => sum + t, 0) / timesMs.length / 1000
+    : 0;
+  const maxTime = timesMs.length > 0
+    ? Math.max(...timesMs) / 1000
+    : 0;
+  const perQuestionOk = timesMs.length > 0 && timesMs.every(t => t < 5000);
+  const percentage = gameState.responses.length > 0
+    ? Math.round((correct / gameState.responses.length) * 100)
     : 0;
   
   return {
     correct,
     incorrect,
     avgTime,
-    percentage: Math.round((correct / gameState.responses.length) * 100),
+    maxTime,
+    percentage,
     total: gameState.responses.length,
-    passed: correct / gameState.responses.length >= 0.9 && avgTime < 5
+    passed: gameState.responses.length > 0 && (correct / gameState.responses.length) >= 0.9 && perQuestionOk
   };
 }
 
@@ -210,8 +231,11 @@ function showRoundResults() {
         <div class="result-item" style="color: ${results.correct > results.incorrect ? '#2ecc71' : '#e74c3c'}">
           <strong>Riktig:</strong> ${results.correct}/${results.total}
         </div>
-        <div class="result-item" style="color: ${results.avgTime < 5 ? '#2ecc71' : '#e74c3c'}">
+        <div class="result-item" style="color: ${results.maxTime < 5 ? '#2ecc71' : '#e74c3c'}">
           <strong>Gj.snitt tid:</strong> ${results.avgTime.toFixed(1)}s (mål: <5s)
+        </div>
+        <div class="result-item" style="color: ${results.maxTime < 5 ? '#2ecc71' : '#e74c3c'}">
+          <strong>Maks tid:</strong> ${results.maxTime.toFixed(1)}s (mål: <5s per oppgave)
         </div>
         <div class="result-item">
           <strong>Prosent:</strong> ${results.percentage}% (mål: >90%)
@@ -250,7 +274,6 @@ function showRoundResults() {
     html += `
       <div class="actions">
         <button class="btn-retry" onclick="retryRound()">Prøv igjen</button>
-        <button class="btn-next" onclick="skipToNextRound()">Gå videre likevel</button>
       </div>
     `;
   }
@@ -306,11 +329,6 @@ function retryRound() {
   render();
 }
 
-// Skip to next round anyway
-function skipToNextRound() {
-  nextRound();
-}
-
 // Initialize game
 function initGame() {
   // Check if LEVELS and TASKS are defined
@@ -343,10 +361,3 @@ function initGame() {
 
 // Start on page load
 window.addEventListener('DOMContentLoaded', initGame);
-
-// Fallback: also try to start after a delay
-setTimeout(() => {
-  if (!gameState.roundTasks || gameState.roundTasks.length === 0) {
-    initGame();
-  }
-}, 500);
