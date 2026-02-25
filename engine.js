@@ -21,6 +21,7 @@ function createDefaultGameState() {
 let gameState = createDefaultGameState();
 
 let fallbackGameState = null;
+let isAnswerTransitioning = false;
 
 // Save/Load from localStorage
 function saveState() {
@@ -356,7 +357,7 @@ function render() {
       const num = answer.replace('🎲', '');
       displayAnswer = renderDice(num);
     }
-    html += `<button class="answer-btn" onclick="recordAnswer('${answer}')">${displayAnswer}</button>`;
+    html += `<button class="answer-btn" onclick="recordAnswer(this, '${answer}')">${displayAnswer}</button>`;
   });
   
   html += `</div></div>`;
@@ -379,7 +380,20 @@ function completeRoundAndReturnToOverview() {
 }
 
 // Record answer and move to next task
-function recordAnswer(answer) {
+function recordAnswer(buttonEl, answer) {
+  if (isAnswerTransitioning) {
+    return;
+  }
+  isAnswerTransitioning = true;
+
+  if (buttonEl) {
+    buttonEl.classList.add('answer-selected');
+  }
+
+  document.querySelectorAll('.answer-btn').forEach((button) => {
+    button.disabled = true;
+  });
+
   // Remove focus from clicked button to prevent cursor persistence
   if (document.activeElement) {
     document.activeElement.blur();
@@ -403,7 +417,10 @@ function recordAnswer(answer) {
   saveState();
   
   // Small delay before showing next task
-  setTimeout(() => render(), 500);
+  setTimeout(() => {
+    isAnswerTransitioning = false;
+    render();
+  }, 350);
 }
 
 // Calculate results

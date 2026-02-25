@@ -120,6 +120,12 @@ body {
   transform: scale(0.98);
 }
 
+.answer-btn.answer-selected {
+  background: #667eea;
+  color: white;
+  transform: scale(1.03);
+}
+
 .answer-btn:focus {
   outline: none;
 }
