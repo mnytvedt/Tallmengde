@@ -16,13 +16,26 @@ let gameState = {
   showOverview: true
 };
 
+let fallbackGameState = null;
+
 // Save/Load from localStorage
 function saveState() {
-  localStorage.setItem('gameState', JSON.stringify(gameState));
+  const serializedState = JSON.stringify(gameState);
+  fallbackGameState = serializedState;
+  try {
+    localStorage.setItem('gameState', serializedState);
+  } catch (e) {
+    console.warn('localStorage unavailable, using in-memory state fallback.');
+  }
 }
 
 function loadState() {
-  const saved = localStorage.getItem('gameState');
+  let saved = fallbackGameState;
+  try {
+    saved = localStorage.getItem('gameState') || fallbackGameState;
+  } catch (e) {
+    console.warn('localStorage unavailable, using in-memory state fallback.');
+  }
   if (saved) {
     gameState = JSON.parse(saved);
   }
