@@ -1,20 +1,24 @@
 
 // Game State Management
-let gameState = {
-  currentLevel: 'level1',
-  currentModule: 'A',
-  currentRound: 1,
-  currentTaskIndex: 0,
-  responses: [], // { taskIndex, answer, correct, timeMs, taskId }
-  unlockedLevels: ['level1'],
-  sessionStartTime: null,
-  questionStartTime: null,
-  roundTasks: [], // Tasks for current round
-  previousTaskId: null,
-  previousCorrectIndex: null,
-  completedRounds: {}, // { 'level1-1': {passed: true, score: 95, time: 4.2}, ... }
-  showOverview: true
-};
+function createDefaultGameState() {
+  return {
+    currentLevel: 'level1',
+    currentModule: 'A',
+    currentRound: 1,
+    currentTaskIndex: 0,
+    responses: [], // { taskIndex, answer, correct, timeMs, taskId }
+    unlockedLevels: ['level1'],
+    sessionStartTime: null,
+    questionStartTime: null,
+    roundTasks: [], // Tasks for current round
+    previousTaskId: null,
+    previousCorrectIndex: null,
+    completedRounds: {}, // { 'level1-1': {passed: true, score: 95, time: 4.2}, ... }
+    showOverview: true
+  };
+}
+
+let gameState = createDefaultGameState();
 
 let fallbackGameState = null;
 
@@ -37,7 +41,25 @@ function loadState() {
     console.warn('localStorage unavailable, using in-memory state fallback.');
   }
   if (saved) {
-    gameState = JSON.parse(saved);
+    try {
+      const parsedState = JSON.parse(saved);
+      const defaultState = createDefaultGameState();
+      gameState = {
+        ...defaultState,
+        ...parsedState,
+        responses: Array.isArray(parsedState.responses) ? parsedState.responses : [],
+        unlockedLevels: Array.isArray(parsedState.unlockedLevels) ? parsedState.unlockedLevels : ['level1'],
+        roundTasks: Array.isArray(parsedState.roundTasks) ? parsedState.roundTasks : [],
+        completedRounds: parsedState.completedRounds && typeof parsedState.completedRounds === 'object'
+          ? parsedState.completedRounds
+          : {}
+      };
+    } catch (e) {
+      console.warn('Invalid saved game state, resetting to defaults.');
+      gameState = createDefaultGameState();
+    }
+  } else {
+    gameState = createDefaultGameState();
   }
 }
 
