@@ -104,12 +104,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.answer-btn:hover {
-  background: #667eea;
-  color: white;
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .answer-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: scale(1.05);
+  }
 }
 
 .answer-btn:active {
