@@ -259,7 +259,7 @@ function render() {
   }
   
   if (gameState.currentTaskIndex >= gameState.roundTasks.length) {
-    showRoundResults();
+    completeRoundAndReturnToOverview();
     return;
   }
   
@@ -326,6 +326,21 @@ function render() {
   
   html += `</div></div>`;
   app.innerHTML = html;
+}
+
+function completeRoundAndReturnToOverview() {
+  const results = calculateResults();
+  const roundKey = `${gameState.currentLevel}-${gameState.currentRound}`;
+
+  gameState.completedRounds[roundKey] = {
+    passed: results.passed,
+    score: results.percentage,
+    time: results.avgTime.toFixed(1)
+  };
+
+  gameState.showOverview = true;
+  saveState();
+  render();
 }
 
 // Record answer and move to next task
@@ -508,7 +523,7 @@ function initGame() {
     console.error('Error loading state:', e);
   }
   try {
-    initializeRound();
+    gameState.showOverview = true;
     render();
   } catch (e) {
     console.error('Error initializing game:', e);
